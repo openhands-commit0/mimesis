@@ -27,6 +27,8 @@ class TestBase:
             def _load_dataset(self) -> None:
                 self._dataset = {}
 
+        return TestProvider()
+
     @pytest.mark.parametrize(
         "locale, new_locale",
         [

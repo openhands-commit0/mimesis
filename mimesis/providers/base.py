@@ -90,7 +90,7 @@ class BaseProvider:
     def _has_seed(self) -> bool:
         """Internal API to check if seed is set."""
         from mimesis import random
-        return (self.seed is not MissingSeed and self.seed is not None) or random.global_seed is not MissingSeed
+        return (self.seed is not MissingSeed and self.seed is not None) or (random.global_seed is not MissingSeed and random.global_seed is not None)
 
     def __str__(self) -> str:
         """Human-readable representation of locale."""
@@ -118,7 +118,7 @@ class BaseDataProvider(BaseProvider):
         :return: Nothing.
         """
         locale = validate_locale(locale)
-        setattr(self, 'locale', locale)
+        setattr(self, 'locale', locale.value)
 
     def _extract(self, keys: list[str], default: t.Any=None) -> t.Any:
         """Extracts nested values from JSON file by list of keys.
