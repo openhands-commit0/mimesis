@@ -98,7 +98,7 @@ class BaseProvider:
     def __str__(self) -> str:
         """Human-readable representation of locale."""
         locale = getattr(self, 'locale', Locale.DEFAULT.value)
-        return f"BaseDataProvider <Locale.{locale.upper()}>"
+        return f"{self.__class__.__name__} <Locale.{locale.upper()}>"
 
 class BaseDataProvider(BaseProvider):
     """This is a base class for all data providers."""
@@ -208,8 +208,7 @@ class BaseDataProvider(BaseProvider):
 
         :return: Current locale.
         """
-        locale = getattr(self, 'locale', Locale.DEFAULT)
-        return locale.value
+        return getattr(self, 'locale', Locale.DEFAULT.value)
 
     def _override_locale(self, locale: Locale=Locale.DEFAULT) -> None:
         """Overrides current locale with passed and pull data for new locale.
