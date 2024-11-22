@@ -89,7 +89,7 @@ class BaseProvider:
 
     def _has_seed(self) -> bool:
         """Internal API to check if seed is set."""
-        return self.seed is not MissingSeed
+        return (self.seed is not MissingSeed and self.seed is not None) or random.global_seed is not MissingSeed
 
     def __str__(self) -> str:
         """Human-readable representation of locale."""
@@ -149,27 +149,32 @@ class BaseDataProvider(BaseProvider):
 
         :return: The content of the file.
         :raises UnsupportedLocale: Raises if locale is unsupported.
+        :raises FileNotFoundError: If the required data file is not found.
         """
         locale = self.locale.value
-        provider = self.Meta.name
+        provider = getattr(self.Meta, 'name', None)
+        datafile = getattr(self.Meta, 'datafile', f'{provider}.json')
+        datadir = getattr(self.Meta, 'datadir', DATADIR)
+
+        if not provider:
+            return
 
         data = {}
         if LOCALE_SEP in locale:
             # Use data from base locale if data for subset locale is missing
             base_locale = locale.split(LOCALE_SEP)[0]
-            try:
-                base_file = DATADIR.joinpath(base_locale, f'{provider}.json')
+            base_file = datadir.joinpath(base_locale, datafile)
+            if base_file.exists():
                 with open(base_file, encoding='utf8') as f:
                     data = json.load(f)
-            except FileNotFoundError:
-                pass
 
-        try:
-            file = DATADIR.joinpath(locale, f'{provider}.json')
+        file = datadir.joinpath(locale, datafile)
+        if not file.exists():
+            if not data:  # No base locale data found either
+                raise FileNotFoundError(f"File not found: {file}")
+        else:
             with open(file, encoding='utf8') as f:
                 data.update(json.load(f))
-        except FileNotFoundError:
-            pass
 
         self._dataset = data
 

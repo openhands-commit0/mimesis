@@ -19,7 +19,11 @@ from . import patterns
 class TestBase:
     @pytest.fixture
     def base_data_provider(self):
-        return BaseDataProvider()
+        class TestProvider(BaseDataProvider):
+            class Meta:
+                name = "test"
+
+        return TestProvider()
 
     @pytest.mark.parametrize(
         "locale, new_locale",
