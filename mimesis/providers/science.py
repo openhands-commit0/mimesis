@@ -19,7 +19,7 @@ class Science(BaseProvider):
         :Example:
             AGUGACACAA
         """
-        rna_nucleotides = ['A', 'G', 'U', 'C']
+        rna_nucleotides = ('A', 'G', 'U', 'C')  # Use tuple for immutability
         return ''.join(self.random.choices(rna_nucleotides, k=length))
 
     def dna_sequence(self, length: int=10) -> str:
@@ -31,7 +31,7 @@ class Science(BaseProvider):
         :Example:
             GCTTTAGACC
         """
-        dna_nucleotides = ['A', 'G', 'T', 'C']
+        dna_nucleotides = ('A', 'G', 'T', 'C')  # Use tuple for immutability
         return ''.join(self.random.choices(dna_nucleotides, k=length))
 
     def measure_unit(self, name: MeasureUnit | None=None, symbol: bool=False) -> str:
@@ -60,6 +60,8 @@ class Science(BaseProvider):
         """
         if sign is None:
             sign = self.random.choice(list(MetricPrefixSign))
+        elif not isinstance(sign, MetricPrefixSign):
+            raise NonEnumerableError("Sign must be a MetricPrefixSign enum member.")
 
         prefixes = SI_PREFIXES_SYM if symbol else SI_PREFIXES
         return self.random.choice(prefixes[sign.value])
