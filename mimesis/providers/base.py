@@ -52,7 +52,8 @@ class BaseProvider:
         :param seed: Seed for random.
             When set to `None` the current system time is used.
         """
-        pass
+        if seed is not MissingSeed:
+            self.random.seed(seed)
 
     def validate_enum(self, item: t.Any, enum: t.Any) -> t.Any:
         """Validates various enum objects that are used as arguments for methods.
