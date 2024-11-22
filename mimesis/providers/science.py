@@ -19,7 +19,8 @@ class Science(BaseProvider):
         :Example:
             AGUGACACAA
         """
-        pass
+        rna_nucleotides = ['A', 'G', 'U', 'C']
+        return ''.join(self.random.choices(rna_nucleotides, k=length))
 
     def dna_sequence(self, length: int=10) -> str:
         """Generates a random DNA sequence.
@@ -30,7 +31,8 @@ class Science(BaseProvider):
         :Example:
             GCTTTAGACC
         """
-        pass
+        dna_nucleotides = ['A', 'G', 'T', 'C']
+        return ''.join(self.random.choices(dna_nucleotides, k=length))
 
     def measure_unit(self, name: MeasureUnit | None=None, symbol: bool=False) -> str:
         """Returns unit name from the International System of Units.
@@ -39,7 +41,11 @@ class Science(BaseProvider):
         :param symbol: Return only symbol
         :return: Unit.
         """
-        pass
+        if name is None:
+            name = self.random.choice(list(MeasureUnit))
+
+        unit_name, unit_symbol = name.value
+        return unit_symbol if symbol else unit_name
 
     def metric_prefix(self, sign: MetricPrefixSign | None=None, symbol: bool=False) -> str:
         """Generates a random prefix for the International System of Units.
@@ -52,4 +58,8 @@ class Science(BaseProvider):
         :Example:
             mega
         """
-        pass
+        if sign is None:
+            sign = self.random.choice(list(MetricPrefixSign))
+
+        prefixes = SI_PREFIXES_SYM if symbol else SI_PREFIXES
+        return self.random.choice(prefixes[sign.value])
