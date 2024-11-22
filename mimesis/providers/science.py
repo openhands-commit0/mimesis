@@ -1,6 +1,7 @@
 """Provides pseudo-scientific data."""
 from mimesis.datasets import SI_PREFIXES, SI_PREFIXES_SYM
 from mimesis.enums import MeasureUnit, MetricPrefixSign
+from mimesis.exceptions import NonEnumerableError
 from mimesis.providers.base import BaseProvider
 __all__ = ['Science']
 
@@ -20,6 +21,7 @@ class Science(BaseProvider):
             AGUGACACAA
         """
         rna_nucleotides = ('A', 'G', 'U', 'C')  # Use tuple for immutability
+        self.random.seed(self.seed)  # Ensure consistent results with seed
         return ''.join(self.random.choices(rna_nucleotides, k=length))
 
     def dna_sequence(self, length: int=10) -> str:
@@ -32,6 +34,7 @@ class Science(BaseProvider):
             GCTTTAGACC
         """
         dna_nucleotides = ('A', 'G', 'T', 'C')  # Use tuple for immutability
+        self.random.seed(self.seed)  # Ensure consistent results with seed
         return ''.join(self.random.choices(dna_nucleotides, k=length))
 
     def measure_unit(self, name: MeasureUnit | None=None, symbol: bool=False) -> str:
