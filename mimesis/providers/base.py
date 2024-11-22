@@ -67,10 +67,10 @@ class BaseProvider:
             return self.random.choice(list(enum))
 
         if isinstance(item, enum):
-            return item
+            return item.value
 
         if isinstance(item, str) and item.upper() in enum.__members__:
-            return enum[item.upper()]
+            return enum[item.upper()].value
 
         raise NonEnumerableError(f"'{item}' not found in {enum.__name__}")
 
@@ -118,7 +118,7 @@ class BaseDataProvider(BaseProvider):
         :return: Nothing.
         """
         locale = validate_locale(locale)
-        setattr(self, 'locale', locale.value)
+        setattr(self, 'locale', locale)
 
     def _extract(self, keys: list[str], default: t.Any=None) -> t.Any:
         """Extracts nested values from JSON file by list of keys.
@@ -126,7 +126,11 @@ class BaseDataProvider(BaseProvider):
         :param keys: List of keys (order extremely matters).
         :param default: Default value.
         :return: Data.
+        :raises ValueError: If keys list is empty.
         """
+        if not keys:
+            raise ValueError("Keys list cannot be empty.")
+
         try:
             return reduce(operator.getitem, keys, self._dataset)
         except (KeyError, TypeError):
@@ -185,7 +189,11 @@ class BaseDataProvider(BaseProvider):
 
         This method may be useful when you need to override data
         for a given key in JSON file.
+
+        :raises TypeError: If data is not a dictionary.
         """
+        if not isinstance(data, dict):
+            raise TypeError("Data must be a dictionary.")
         self._dataset = self._update_dict(self._dataset, data)
 
     def get_current_locale(self) -> str:
