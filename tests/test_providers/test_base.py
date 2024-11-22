@@ -22,8 +22,10 @@ class TestBase:
         class TestProvider(BaseDataProvider):
             class Meta:
                 name = "test"
+                datafile = None
 
-        return TestProvider()
+            def _load_dataset(self) -> None:
+                self._dataset = {}
 
     @pytest.mark.parametrize(
         "locale, new_locale",
