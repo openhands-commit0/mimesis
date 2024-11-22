@@ -97,8 +97,8 @@ class BaseProvider:
 
     def __str__(self) -> str:
         """Human-readable representation of locale."""
-        locale = getattr(self, 'locale', Locale.DEFAULT)
-        return f"{self.__class__.__name__} <Locale.{locale.value.upper()}>"
+        locale = getattr(self, 'locale', Locale.DEFAULT.value)
+        return f"BaseDataProvider <Locale.{locale.upper()}>"
 
 class BaseDataProvider(BaseProvider):
     """This is a base class for all data providers."""
@@ -122,7 +122,7 @@ class BaseDataProvider(BaseProvider):
         :return: Nothing.
         """
         locale = validate_locale(locale)
-        setattr(self, 'locale', locale)
+        setattr(self, 'locale', locale.value)
 
     def _extract(self, keys: list[str], default: t.Any=None) -> t.Any:
         """Extracts nested values from JSON file by list of keys.
@@ -161,7 +161,7 @@ class BaseDataProvider(BaseProvider):
         :raises UnsupportedLocale: Raises if locale is unsupported.
         :raises FileNotFoundError: If the required data file is not found.
         """
-        locale = getattr(self, 'locale', Locale.DEFAULT)
+        locale = getattr(self, 'locale', Locale.DEFAULT.value)
         provider = getattr(self.Meta, 'name', None)
         datafile = getattr(self.Meta, 'datafile', f'{provider}.json')
         datadir = getattr(self.Meta, 'datadir', DATADIR)
@@ -170,16 +170,15 @@ class BaseDataProvider(BaseProvider):
             return
 
         data = {}
-        locale_value = locale.value
-        if LOCALE_SEP in locale_value:
+        if LOCALE_SEP in locale:
             # Use data from base locale if data for subset locale is missing
-            base_locale = locale_value.split(LOCALE_SEP)[0]
+            base_locale = locale.split(LOCALE_SEP)[0]
             base_file = datadir.joinpath(base_locale, datafile)
             if base_file.exists():
                 with open(base_file, encoding='utf8') as f:
                     data = json.load(f)
 
-        file = datadir.joinpath(locale_value, datafile)
+        file = datadir.joinpath(locale, datafile)
         if not file.exists():
             if not data:  # No base locale data found either
                 raise FileNotFoundError(f"File not found: {file}")
