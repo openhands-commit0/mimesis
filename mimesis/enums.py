@@ -30,6 +30,14 @@ class Locale(Enum):
 
     An argument for all local-depend providers.
     """
+    @classmethod
+    def values(cls) -> t.List[str]:
+        """Return a list of locale values.
+
+        Returns:
+            List[str]: List of locale values.
+        """
+        return [member.value for member in cls if member != cls.DEFAULT]
     CS = 'cs'
     DA = 'da'
     DE = 'de'
