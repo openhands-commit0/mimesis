@@ -63,8 +63,11 @@ class BaseProvider:
         :return: Value of item.
         :raises NonEnumerableError: If enums has not such an item.
         """
+        if not hasattr(enum, '__members__'):
+            raise NonEnumerableError("Invalid enum type")
+
         if item is None:
-            return self.random.choice(list(enum))
+            return self.random.choice([member.value for member in enum])
 
         if isinstance(item, enum):
             return item.value
@@ -94,7 +97,8 @@ class BaseProvider:
 
     def __str__(self) -> str:
         """Human-readable representation of locale."""
-        return self.__class__.__name__
+        locale = getattr(self, 'locale', Locale.DEFAULT.value)
+        return f"{self.__class__.__name__} <Locale.{locale.upper()}>"
 
 class BaseDataProvider(BaseProvider):
     """This is a base class for all data providers."""
@@ -118,7 +122,7 @@ class BaseDataProvider(BaseProvider):
         :return: Nothing.
         """
         locale = validate_locale(locale)
-        setattr(self, 'locale', locale)
+        setattr(self, 'locale', locale.value)
 
     def _extract(self, keys: list[str], default: t.Any=None) -> t.Any:
         """Extracts nested values from JSON file by list of keys.
@@ -224,7 +228,11 @@ class BaseDataProvider(BaseProvider):
 
         :param locale: Locale.
         :return: Provider with overridden locale.
+        :raises ValueError: If locale is not set.
         """
+        if not hasattr(self, 'locale'):
+            raise ValueError("Locale is not set.")
+
         current_locale = self.locale
         self._override_locale(locale)
         try:
