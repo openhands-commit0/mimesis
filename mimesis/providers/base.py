@@ -98,7 +98,7 @@ class BaseProvider:
     def __str__(self) -> str:
         """Human-readable representation of locale."""
         locale = getattr(self, 'locale', Locale.DEFAULT.value)
-        return f"{self.__class__.__name__} <Locale.{locale.upper()}>"
+        return f"BaseDataProvider <Locale.{locale.upper()}>"
 
 class BaseDataProvider(BaseProvider):
     """This is a base class for all data providers."""
